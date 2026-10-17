@@ -51,11 +51,6 @@
         'data/ir_sequence_data.xml',
         'data/reservation.xml',
     ],
-    'assets': {
-        "web.assets_backend": [
-            "/rental/static/src/js/rental_calendar_view.js",
-            "/rental/static/src/js/hour_widget.js"
-        ]
-    },
+    'assets': {},
     'demo': []
 }

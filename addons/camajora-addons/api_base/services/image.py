@@ -1,16 +1,10 @@
 # Copyright 2020 Metadonors Srl
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-import base64
-import logging
-
 from odoo import SUPERUSER_ID
 from odoo.addons.base_rest.components.service import skip_secure_response
 from odoo.addons.component.core import AbstractComponent
 from odoo.exceptions import MissingError
-from odoo.http import request
-
-log = logging.getLogger(__name__)
 
 
 class BaseImageService(AbstractComponent):
@@ -21,18 +15,15 @@ class BaseImageService(AbstractComponent):
 
     @skip_secure_response
     def _get_image_response(self, _id, model):
-        status, headers, content = self.env['ir.http'].binary_content(
-            model=model, id=_id, field='image', env=self.env(user=SUPERUSER_ID)
-        )
+        env = self.env(user=SUPERUSER_ID)
+        record = env[model].browse(_id).exists()
 
-        if not content:
+        if not record:
             raise MissingError('Image not found')
 
-        image_base64 = base64.b64decode(content)
-        headers.append(('Content-Length', len(image_base64)))
-        response = request.make_response(image_base64, headers)
-        response.status_code = status
-        return response
+        stream = env['ir.binary']._get_image_stream_from(record, 'image')
+        stream.public = True
+        return stream.get_response()
 
     def _validator_get(self):
         return {

@@ -1,4 +1,4 @@
-odoo.define("base_rest.swagger", function (require) {
+odoo.define("base_rest.swagger", ["web.public.widget", "base_rest.swagger_ui"], function (require) {
     "use strict";
 
     var publicWidget = require("web.public.widget");

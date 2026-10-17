@@ -1,5 +1,5 @@
 /* global SwaggerUIBundle, SwaggerUIStandalonePreset*/
-odoo.define("base_rest.swagger_ui", function (require) {
+odoo.define("base_rest.swagger_ui", ["web.core"], function (require) {
     "use strict";
 
     var core = require("web.core");

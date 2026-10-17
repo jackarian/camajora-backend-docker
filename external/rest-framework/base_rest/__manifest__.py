@@ -18,7 +18,7 @@
         "views/base_rest_view.xml",
     ],
     "assets": {
-        "web.assets_frontend": [
+        "base_rest.assets_swagger": [
             "base_rest/static/src/scss/base_rest.scss",
             "base_rest/static/src/js/swagger_ui.js",
             "base_rest/static/src/js/swagger.js",

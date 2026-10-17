@@ -30,7 +30,7 @@
           </group>
           <notebook>
             <page string="Slots">
-              <field name="slot_ids" context="{'default_booking_id': active_id}">
+              <field name="slot_ids" context="{'default_booking_id': id}">
                 <tree>
                   <field name="name" />
                   <field name="resource_instance_id" />
@@ -39,7 +39,7 @@
                   <field name="duration_id" />
                   <field name="dt_start" />
                   <field name="dt_end" />
-                  <field name="total_hours" widget="hourseconds"/>
+                  <field name="total_hours"/>
                 </tree>
               </field>
             </page>

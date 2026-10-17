@@ -35,7 +35,7 @@
 
               <field name="half_day_type" invisible="duration != 'half_daily'" />
 
-              <field name="total_hours" widget="hourseconds"/>
+              <field name="total_hours"/>
               <field name="dt_start" />
               <field name="dt_end" />
             </group>
