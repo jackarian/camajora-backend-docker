@@ -9,9 +9,9 @@
       <xpath expr="//notebook" position="inside">
         <page string="Wallet">
           <group>
-            <field  name="check_superuser" attrs="{'invisible': True}"/>
-            <field  name="credits" attrs="{'invisible': [('check_superuser', '=', False)]}"/>
-            <field  name="credits_available" attrs="{'invisible': [('check_superuser', '=', True)]}"/>
+            <field  name="check_superuser" invisible="True"/>
+            <field  name="credits" invisible="not check_superuser"/>
+            <field  name="credits_available" invisible="check_superuser"/>
           </group>
         </page>
       </xpath>

@@ -8,7 +8,7 @@
     <field name="arch" type="xml">
       <field name="categ_id" position="before">
         <field name="is_credits" />
-        <field name="credits_value" attrs="{'invisible': [('is_credits','=',False)]}" />
+        <field name="credits_value" invisible="not is_credits" />
       </field>
       <xpath expr="//div[@name='options']" position="inside">
         <div>
@@ -26,7 +26,7 @@
     <field name="arch" type="xml">
       <field name="name" position="after">
         <field name="is_credits" />
-        <field name="credits_value" attrs="{'invisible': [('is_credits','=',False)]}" />
+        <field name="credits_value" invisible="not is_credits" />
       </field>
     </field>
   </record>

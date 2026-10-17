@@ -3,10 +3,7 @@
 
 import logging
 
-from odoo import api, fields, models, _
-from odoo.tools import float_is_zero, float_compare, DEFAULT_SERVER_DATETIME_FORMAT
-from odoo.exceptions import UserError, AccessError
-from odoo.osv import expression
+from odoo import fields, models, _
 
 _logger = logging.getLogger(__name__)
 
@@ -27,7 +24,6 @@ class SaleOrder(models.Model):
         ('cancel', 'Cancelled'),
     ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', default='draft')
 
-    @api.multi
     def action_confirm_cart(self):
         for record in self:
             if record.typology == "sale":
@@ -37,14 +33,12 @@ class SaleOrder(models.Model):
 
         return True
 
-    @api.multi
     def _review_order(self):
         """
             Change the state order to 'review'
         """
         self.state = "review"
 
-    @api.multi
     def action_accept_order(self):
         """
             Accept order from review state
@@ -52,7 +46,6 @@ class SaleOrder(models.Model):
         self.state = "sent"
         self.force_quotation_send()
 
-    @api.multi
     def action_back_draft(self):
         """
             Order return in draft state from review
@@ -62,7 +55,6 @@ class SaleOrder(models.Model):
             'state': 'draft',
         })
 
-    @api.multi
     def action_confirm(self):
         res = super(SaleOrder, self).action_confirm()
         for record in self:

@@ -13,7 +13,6 @@
         <field name="name">Quotations</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">sale.order</field>
-        <field name="view_type">form</field>
         <field name="domain">[('typology', '=', 'sale')]</field>
         <field name="view_id" ref="sale.view_quotation_tree"/>
         <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
@@ -35,8 +34,8 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             <header position="inside">
-                    <button name="action_accept_order" string="Accept Order" type="object" states="review"/>
-                    <button name="action_back_draft" string="Back to Draft" type="object" states="review"/>
+                    <button name="action_accept_order" string="Accept Order" type="object" invisible="state != 'review'"/>
+                    <button name="action_back_draft" string="Back to Draft" type="object" invisible="state != 'review'"/>
             </header>
             <xpath expr="//field[@name='state']" position="replace">
                 <field name="state" widget="statusbar" statusbar_visible="draft,review,sent,sale"/>
@@ -49,7 +48,7 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_sales_order_filter"/>
         <field name="arch" type="xml">
-            <xpath expr="//filter[@name='activities_my']" position="after">
+            <xpath expr="//search" position="inside">
                 <filter string="Abandoned Carts" name="abandoned_cart" domain="[('typology','=','cart'), ('state','=','draft'),('order_line.product_uom_qty','>=',0)]"/>
                 <separator/>
             </xpath>
@@ -59,7 +58,6 @@
         <field name="name">Carts</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">sale.order</field>
-        <field name="view_type">form</field>
         <field name="domain">[('typology', '=', 'cart')]</field>
         <field name="view_id" ref="sale.view_quotation_tree"/>
         <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>

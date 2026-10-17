@@ -2,10 +2,9 @@ import logging
 import stripe
 
 from odoo import _
+from odoo.addons.payment import utils as payment_utils
 from odoo.addons.component.core import Component
 from odoo.exceptions import UserError
-from odoo.addons.payment_stripe.models.payment import INT_CURRENCIES
-from odoo.tools.float_utils import float_round
 
 
 _logger = logging.getLogger(__name__)
@@ -30,10 +29,10 @@ class PaymentService(Component):
 
     @property
     def stripe_backend(self):
-        acquirer_id = self.env['payment.acquirer'].sudo().search([
-            ('provider', '=', "stripe")
+        provider = self.env['payment.provider'].sudo().search([
+            ('code', '=', "stripe")
         ])
-        return acquirer_id[0]
+        return provider[0]
 
     def config(self):
         return {
@@ -60,7 +59,7 @@ class PaymentService(Component):
                 # "amount": order_id.amount_total,
                 # "currency_id": order_id.currency_id.id,
                 # "partner_id": order_id.partner_id.id,
-                "acquirer_id": self.stripe_backend.id,
+                "provider_id": self.stripe_backend.id,
                 # "sale_order_id": order_id.id,
                 "reference":  "%s-%s" % (order_id.name, self.env["ir.sequence"].sudo().next_by_code("stripe.transaction.reference"))
             }
@@ -69,7 +68,7 @@ class PaymentService(Component):
             transaction = order_id.sudo()._create_payment_transaction(vals)
             intent = self._prepare_stripe_intent(order_id, transaction)
             transaction.write({
-                'acquirer_reference': intent.id,
+                'provider_reference': intent.id,
             })
             return intent
         except Exception as e:
@@ -85,7 +84,7 @@ class PaymentService(Component):
             _logger.error("SUCCESS")
             transaction.sudo().write({
                 'state': 'done',
-                'acquirer_reference': params['intent_id'],
+                'provider_reference': params['intent_id'],
             })
             _logger.error("GENERATE, PAY AND SEND INVOICE")
             _logger.error("SENDING INVOICE")
@@ -131,11 +130,7 @@ class PaymentService(Component):
         :param amount: float
         :return: int
         """
-        res = int(
-            amount
-            if currency.name in INT_CURRENCIES
-            else float_round(amount * 100, 2)
-        )
+        res = int(payment_utils.to_minor_currency_units(amount, currency))
         return res
 
     def _get_stripe_transaction_from_intent(self, intent_id):
@@ -146,8 +141,8 @@ class PaymentService(Component):
         """
         transaction = self.env["payment.transaction"].search(
             [
-                ("acquirer_reference", "=", intent_id),
-                ("acquirer_id.provider", "=", "stripe"),
+                ("provider_reference", "=", intent_id),
+                ("provider_id.code", "=", "stripe"),
             ],
             limit=1,
         )

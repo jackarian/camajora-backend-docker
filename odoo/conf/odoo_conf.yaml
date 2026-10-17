@@ -5,6 +5,7 @@ addons_path:
     - /mnt/bundle-addons/connector
     - /mnt/bundle-addons/queue
     - /mnt/bundle-addons/rest-framework
+    - /mnt/bundle-addons/server-tools
     - /mnt/bundle-addons/server-ux
 log_level : debug
 admin_passwd: admin

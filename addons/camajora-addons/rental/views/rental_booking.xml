@@ -7,8 +7,8 @@
     <field name="arch" type="xml">
       <form create="false" edit="false">
         <header>
-          <button name="action_confirm" states="draft" type="object" string="Confirm" class="btn-primary" />
-          <button name="action_cancel" states="draft" type="object" string="Cancel" />
+          <button name="action_confirm" invisible="state != 'draft'" type="object" string="Confirm" class="btn-primary" />
+          <button name="action_cancel" invisible="state != 'draft'" type="object" string="Cancel" />
           <field name="state" widget="statusbar" />
         </header>
         <sheet>

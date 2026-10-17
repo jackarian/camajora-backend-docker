@@ -29,6 +29,7 @@ services:
       - "./addons/camajora-addons:/mnt/bundle-addons/camajora-addons"
       - "./external/connector:/mnt/bundle-addons/connector"
       - "./external/queue:/mnt/bundle-addons/queue"
+      - "./external/server-tools:/mnt/bundle-addons/server-tools"
       - "./external/server-ux:/mnt/bundle-addons/server-ux"
       - "./external/rest-framework:/mnt/bundle-addons/rest-framework"
     command: run  -d odoo_camajora --dev=all --db-filter odoo_camajora
@@ -59,6 +60,7 @@ services:
       - "./addons/camajora-addons:/mnt/bundle-addons/camajora-addons"
       - "./external/connector:/mnt/bundle-addons/connector"
       - "./external/queue:/mnt/bundle-addons/queue"
+      - "./external/server-tools:/mnt/bundle-addons/server-tools"
       - "./external/server-ux:/mnt/bundle-addons/server-ux"
       - "./external/rest-framework:/mnt/bundle-addons/rest-framework"
     profiles:

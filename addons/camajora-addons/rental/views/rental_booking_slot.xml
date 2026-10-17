@@ -24,16 +24,16 @@
               <field name="resource_instance_id" />
             </group>
             <group>
-              <field name="duration" attrs="{'invisible': 1}" />
+              <field name="duration" invisible="True" />
               <field name="duration_id" />
 
               <field name="start_date" />
-              <field name="end_date" attrs="{'invisible': [('duration','in',['hourly', 'half_daily'])]}" />
+              <field name="end_date" invisible="duration in ['hourly', 'half_daily']" />
 
-              <field name="start_time" attrs="{'invisible': [('duration','!=','hourly')]}" widget="timepicker" options="{'datepicker': {'stepping': 30}}" />
-              <field name="end_time" attrs="{'invisible': [('duration','!=','hourly')]}" widget="timepicker" options="{'datepicker': {'stepping': 30}}"/>
+              <field name="start_time" invisible="duration != 'hourly'" widget="timepicker" options="{'datepicker': {'stepping': 30}}" />
+              <field name="end_time" invisible="duration != 'hourly'" widget="timepicker" options="{'datepicker': {'stepping': 30}}"/>
 
-              <field name="half_day_type" attrs="{'invisible': [('duration','!=','half_daily')]}" />
+              <field name="half_day_type" invisible="duration != 'half_daily'" />
 
               <field name="total_hours" widget="hourseconds"/>
               <field name="dt_start" />
@@ -95,13 +95,12 @@
       </tree>
     </field>
   </record>
-!-- readonly_form_view_id="%(my_wizard_form)s"
   <record model="ir.ui.view" id="rental_booking_slot_calendar_view">
     <field name="name">rental.booking.slot.calendar (in rental)</field>
     <field name="model">rental.booking.slot</field>
     <field name="arch" type="xml">
       <calendar  color="partner_id" date_start="dt_start"
-                 date_stop="dt_end" string="Prenotazioni" quick_add="False" event_open_popup="false">
+                 date_stop="dt_end" string="Prenotazioni">
         <field name="booking_id"/>
         <field name="name" />
         <field name="resource_id" />
