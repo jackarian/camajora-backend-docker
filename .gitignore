@@ -1,3 +1,4 @@
 .python-version
 deploy-key*
 __pycache__
+.idea/*
