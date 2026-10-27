@@ -41,6 +41,7 @@ class LocationService(Component):
     def _serialize(self, location_id):
         return {
             "name": location_id.name,
+            "description": location_id.description or "",
             "address": location_id.address or "",
             "postal_code": location_id.postal_code or "",
             "city": location_id.city or "",
@@ -101,6 +102,7 @@ class LocationService(Component):
     def _get_object_schema(self):
         return {
             "name": {"type": "string", "required": True, "empty": False},
+            "description": {"type": "string", "required": False, "empty": True},
             "address": {"type": "string", "required": False, "empty": True},
             "postal_code": {"type": "string", "required": False, "empty": True},
             "city": {"type": "string", "required": False, "empty": True},
