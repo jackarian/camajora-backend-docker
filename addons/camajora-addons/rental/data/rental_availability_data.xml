@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-  <data noupdate="0">
+  <data noupdate="1">
     <record id="rental_availability_work_days" model="rental.availability">
       <field name="name">Workdays</field>
       <field name="description">9-19 da lun a ven</field>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-  <data noupdate="0">
+  <data noupdate="1">
     <record id="rental_resource_performance_nessuna" model="rental.resource.performance">
       <field name="name">Nessuna</field>
       <field name="description">Nessun trattamento acustico specifico</field>

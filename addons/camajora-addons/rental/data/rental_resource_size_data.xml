@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-  <data noupdate="0">
+  <data noupdate="1">
     <record id="rental_resource_size_singola" model="rental.resource.size">
       <field name="name">Singola</field>
       <field name="description">Dimensioni base del quick desk (80x80cm), fino alla postazione riservata (80x160 cm)</field>

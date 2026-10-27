@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-  <data noupdate="0">
+  <data noupdate="1">
     <record id="rental_resource_setup_workplace" model="rental.resource.setup">
       <field name="name">Workplace</field>
       <field name="description">Allestimento base per postazione di lavoro o postazione conference</field>

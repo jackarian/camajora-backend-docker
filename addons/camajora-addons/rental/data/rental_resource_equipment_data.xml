@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-  <data noupdate="0">
+  <data noupdate="1">
     <record id="rental_resource_equipment_base_audio" model="rental.resource.equipment">
       <field name="name">Impianto audio base</field>
       <field name="description">Mixer + casse studio + caveria</field>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <data noupdate="0">
+  <data noupdate="1">
     <!-- Email template for reset password -->
     <record id="reservation_confirm_email" model="mail.template">
         <field name="name">Send qrcode to user for reservation</field>
