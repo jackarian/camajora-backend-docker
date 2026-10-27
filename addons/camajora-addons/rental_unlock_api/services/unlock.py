@@ -1,8 +1,13 @@
 # Copyright 2020 Metadonors srl
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+import pytz
+
+from odoo import fields
 from odoo.addons.component.core import Component
 from odoo.exceptions import MissingError
+
+SSC_TIMEZONE = pytz.timezone('Europe/Rome')
 
 
 class UnlockService(Component):
@@ -15,17 +20,35 @@ class UnlockService(Component):
         """
         Get booking slot informations from booking token
         """
-        booking_slot_id = self.env['rental.booking.slot'].sudo().search([
+        return self._to_json(self._get_slots(token))
+
+    def search(self, itemid, key=None):
+        """
+        Get the booking slot for a token in the format of the SSC server
+        (GET ?key=&itemid=<token>): a single slot, with local Europe/Rome dates
+        """
+        slots = self._get_slots(itemid)
+        slot = slots.filtered(lambda s: s.dt_end >= fields.Datetime.now())[:1] or slots[:1]
+        data = self._serialize(slot)
+        for name in ('dt_start', 'dt_end'):
+            data[name] = pytz.utc.localize(data[name]).astimezone(SSC_TIMEZONE).strftime('%Y-%m-%dT%H:%M:%S')
+        return {
+            'count': len(slots),
+            'results': data,
+        }
+
+    # PRIVATE METHODS
+
+    def _get_slots(self, token):
+        booking_slot_ids = self.env['rental.booking.slot'].sudo().search([
             ('booking_id.state', '=', 'confirmed'),
             ('booking_id.token', '=', token),
         ])
 
-        if not booking_slot_id:
+        if not booking_slot_ids:
             raise MissingError('Invalid or expired token')
 
-        return self._to_json(booking_slot_id)
-
-    # PRIVATE METHODS
+        return booking_slot_ids
 
     def _to_json(self, payload):
         data = payload or []
@@ -49,6 +72,29 @@ class UnlockService(Component):
     def _validator_create(self):
         return {
             'token': {'type': 'string', 'required': True, 'empty': False},
+        }
+
+    def _validator_search(self):
+        return {
+            'itemid': {'type': 'string', 'required': True, 'empty': False},
+            'key': {'type': 'string', 'required': False},
+        }
+
+    def _validator_return_search(self):
+        return {
+            'count': {'type': 'integer', 'required': True},
+            'results': {
+                'type': 'dict',
+                'required': True,
+                'schema': {
+                    'dt_start': {'type': 'string', 'required': True},
+                    'dt_end': {'type': 'string', 'required': True},
+                    'resource_sku': {'type': 'string', 'required': True},
+                    'user_id': {'type': 'integer', 'required': True},
+                    'email': {'type': 'string', 'required': True},
+                    'location_id': {'type': 'integer', 'required': True},
+                },
+            },
         }
 
     def _validator_return_create(self):
