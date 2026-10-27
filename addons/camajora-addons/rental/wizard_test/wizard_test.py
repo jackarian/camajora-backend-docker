@@ -15,6 +15,7 @@ decimal.getcontext().rounding = decimal.ROUND_HALF_EVEN
 
 class MyWizard(models.TransientModel):
     _name = 'my.wizard'
+    _description = 'Rental Booking Wizard'
     _inherit = ['multi.step.wizard.mixin']
 
     location = fields.Many2one(
@@ -47,13 +48,7 @@ class MyWizard(models.TransientModel):
     date = fields.Date(string=_('Date'), default=lambda self: fields.Date.today())
     duration_id = fields.Many2one('rental.duration', string=_('Duration'), required=True)
 
-    duration = fields.Selection([
-        ('hourly', _('Hourly')),
-        ('half_daily', _('Half daily')),
-        ('daily', _('Daily')),
-        ('weekly', _('Weekly')),
-        ('monthly', _('Monthly')),
-    ], related='duration_id.type', string=_('Duration Type'), default='hourly')
+    duration = fields.Selection(related='duration_id.type', string=_('Duration Type'))
 
     start_date = fields.Date(string=_('Start Date'), required=True)
     end_date = fields.Date(string=_('End Date'), required=False)
@@ -156,7 +151,7 @@ class MyWizard(models.TransientModel):
                                             record.dt_start, record.dt_end))
 
             reservetion_found = self.env.cr.fetchone()[0]
-            _logger.debug(self, 'Reservation found: %s', reservetion_found)
+            _logger.debug('Reservation found: %s', reservetion_found)
 
             if reservetion_found > 0:
                 raise ValidationError(_('You can not have an overlap between two booking slots of the same resource.\n'
@@ -184,7 +179,7 @@ class MyWizard(models.TransientModel):
     @api.model
     def _default_project_id(self):
 
-        _logger.debug(self, 'active id is %s', self.env.context.get('active_id'))
+        _logger.debug('active id is %s', self.env.context.get('active_id'))
         resource = self.env['rental.resource'].search([('id', '=', self.env.context.get('active_id'))])
         return resource.location_id
 
@@ -258,7 +253,7 @@ class MyWizard(models.TransientModel):
 
     @api.model
     def _compute_current_id(self):
-        _logger.debug(self, "Computing id")
+        _logger.debug("Computing id")
         return self.env.context.get('active_id')
 
 

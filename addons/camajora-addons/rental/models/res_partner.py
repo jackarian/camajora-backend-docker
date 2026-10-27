@@ -34,7 +34,7 @@ class ResPartner(models.Model):
     booking_slot_ids = fields.One2many(
         'rental.booking.slot',
         'partner_id',
-        string=_("Bookings"))
+        string=_("Booking Slots"))
 
     booking_slot_count = fields.Integer(
         compute="_compute_booking_count",

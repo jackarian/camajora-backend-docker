@@ -49,8 +49,9 @@ class RentalResourceInstance(models.Model):
         for record in self:
             record.booking_slots_count = len(record.booking_slots_ids)
 
-    @api.model
-    def create(self, vals):
-        vals['code'] = self.env['ir.sequence'].next_by_code('rental.resource.instance.code')
-        return super().create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            vals['code'] = self.env['ir.sequence'].next_by_code('rental.resource.instance.code')
+        return super().create(vals_list)
 

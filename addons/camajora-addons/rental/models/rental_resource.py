@@ -44,7 +44,7 @@ class RentalResource(models.Model):
     plugin_type = fields.Char(string=_('Plugin'))
 
     @api.model
-    def search(self, args, offset=0, limit=None, order=None, count=False):
+    def search(self, args, offset=0, limit=None, order=None):
         backend = self.env.context.get('backend')
 
         if backend is not None:
@@ -58,7 +58,7 @@ class RentalResource(models.Model):
                 else:
                     args.append(('partner_id', '=', current_owner.id))
 
-        return super(RentalResource, self).search(args, offset, limit, order, count)
+        return super(RentalResource, self).search(args, offset, limit, order)
 
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=100):
@@ -113,16 +113,17 @@ class RentalResource(models.Model):
             'domain': [('resource_instance_id', 'in', self.instances_ids)],
         }
 
-    @api.model
-    def create(self, vals):
-        vals['code'] = self.env['ir.sequence'].next_by_code('rental.resource.code') or _('New')
-        resource = super().create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            vals['code'] = self.env['ir.sequence'].next_by_code('rental.resource.code') or _('New')
+        resources = super().create(vals_list)
 
-        self.env['rental.resource.instance'].create({
-            'resource_id': resource.id,
-        })
+        self.env['rental.resource.instance'].create([
+            {'resource_id': resource.id} for resource in resources
+        ])
 
-        return resource
+        return resources
 
     def get_best_instance_match(self, start_available, end_available, **kwargs):
         slot_range = compute_range(
