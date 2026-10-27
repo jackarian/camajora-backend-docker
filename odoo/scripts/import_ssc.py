@@ -5,6 +5,9 @@
 # networklocation/ssc/door_opener and the resources with their instance.
 # Address, coordinates, contacts, owner and credit cost are placeholders set only
 # when a record is created: complete them from the backend, re-runs keep them.
+# The location's SSC endpoints (token validation + main door opening, resource
+# activation) are also set only on creation, pointing to the SSC server given by
+# SSC_URL (default http://localhost:8080/ssc, the WildFly deployment).
 #
 # Usage (SSC_SQL_PATH defaults to /tmp/V1__init.sql):
 #   docker compose run --rm --no-deps -T \
@@ -14,6 +17,7 @@ import os
 import re
 
 SQL_PATH = os.environ.get('SSC_SQL_PATH', '/tmp/V1__init.sql')
+SSC_URL = re.match(r'(\w+)://([^:/]+):(\d+)(.*)', os.environ.get('SSC_URL', 'http://localhost:8080/ssc'))
 TABLES = {'networklocation', 'ssc', 'door_opener', 'resource', 'resource_policy', 'resource_door_connection'}
 PLACEHOLDER = 'DA COMPLETARE'
 
@@ -119,13 +123,7 @@ for nl in rows['networklocation']:
         'name': nl['title'],
         'description': f"{ssc.get('name', '')} - {ssc.get('location', '')}",
         'hotspot_name': nl['hotspot_tag'] or '',
-        'scc_address': ssc.get('ip_address') or '',
-        'scc_endpoint_open_door': door.get('path') or '',
-        'scc_endpoint_open_door_protocol': door.get('proto') or '',
-        'scc_endpoint_open_door_port': str(door['port']) if door.get('port') else '',
         'ip_device_door_opening': door.get('address') or '',
-        'scc_endpoint_resource_activation': nl['ip_address'],
-        'scc_endpoint_resource_activation_port': str(nl['ip_port_service'] or ''),
         'opened_from': min(hours(f"{r['start_time_limit'][:5]}-{r['end_time_limit'][:5]}")[0] for r in resources),
         'opened_to': max(hours(f"{r['start_time_limit'][:5]}-{r['end_time_limit'][:5]}")[1] for r in resources),
     }, create_only={
@@ -137,6 +135,14 @@ for nl in rows['networklocation']:
         'country_id': italy.id,
         'latitudo': 0.0,
         'longitudo': 0.0,
+        # SSC endpoints: the backend builds protocol://address:port + endpoint + token
+        'scc_address': SSC_URL[2],
+        'scc_endpoint_open_door_protocol': SSC_URL[1],
+        'scc_endpoint_open_door_port': SSC_URL[3],
+        'scc_endpoint_open_door': f'{SSC_URL[4]}/api/location/opener?token=',
+        'scc_endpoint_resource_activation_protocol': SSC_URL[1],
+        'scc_endpoint_resource_activation_port': SSC_URL[3],
+        'scc_endpoint_resource_activation': f'{SSC_URL[4]}/api/activation/token/',
     })
     locations[ssc.get('id')] = rec
     report.append(f"location {op}: {rec.name}")
