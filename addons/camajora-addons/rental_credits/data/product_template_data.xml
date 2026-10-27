@@ -4,6 +4,7 @@
   <data noupdate="1">
     <record id="product_template_try_me" model="product.template">
       <field name="name">Try me</field>
+      <field name="detailed_type">service</field>
       <field name="is_credits">1</field>
       <field name="credits_value">100</field>
       <field name="list_price">20</field>
@@ -11,6 +12,7 @@
     </record>
     <record id="product_template_reserved_desk" model="product.template">
       <field name="name">Reserved Desk</field>
+      <field name="detailed_type">service</field>
       <field name="is_credits">1</field>
       <field name="credits_value">1000</field>
       <field name="list_price">190</field>
@@ -18,6 +20,7 @@
     </record>
     <record id="product_template_sprint_meeting" model="product.template">
       <field name="name">Sprint Meeting</field>
+      <field name="detailed_type">service</field>
       <field name="is_credits">1</field>
       <field name="credits_value">2500</field>
       <field name="list_price">350</field>
@@ -25,6 +28,7 @@
     </record>
     <record id="product_template_my_release" model="product.template">
       <field name="name">My release</field>
+      <field name="detailed_type">service</field>
       <field name="is_credits">1</field>
       <field name="credits_value">3500</field>
       <field name="list_price">450</field>
@@ -32,6 +36,7 @@
     </record>
     <record id="product_template_my_classroom" model="product.template">
       <field name="name">My Classroom</field>
+      <field name="detailed_type">service</field>
       <field name="is_credits">1</field>
       <field name="credits_value">20000</field>
       <field name="list_price">1500</field>
