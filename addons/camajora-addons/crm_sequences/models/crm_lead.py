@@ -20,10 +20,11 @@ class CrmLead(models.Model):
             result.append((record.id, name))
         return result
 
-    @api.model
-    def create(self, vals):
-        vals['code'] = self.env['ir.sequence'].next_by_code('crm.lead')
-        return super(CrmLead, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            vals['code'] = self.env['ir.sequence'].next_by_code('crm.lead')
+        return super(CrmLead, self).create(vals_list)
 
     def _cron_update_missing_codes(self, *args, **kwargs):
         lead_ids = self.env['crm.lead'].search([

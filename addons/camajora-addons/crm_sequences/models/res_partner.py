@@ -20,10 +20,11 @@ class ResPartner(models.Model):
             result.append((record.id, name))
         return result
 
-    @api.model
-    def create(self, vals):
-        vals['code'] = self.env['ir.sequence'].next_by_code('res.partner')
-        return super(ResPartner, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            vals['code'] = self.env['ir.sequence'].next_by_code('res.partner')
+        return super(ResPartner, self).create(vals_list)
 
     def _cron_update_missing_codes(self, *args, **kwargs):
         partner_ids = self.env['res.partner'].search([

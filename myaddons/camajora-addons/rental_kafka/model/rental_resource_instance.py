@@ -8,19 +8,20 @@ _logger = logging.getLogger(__name__)
 class RentalResourceInstance(models.Model):
     _inherit = 'rental.resource.instance'
 
-    @api.model
-    def create(self, vals):
-        _logger.debug("Test kafka send:%s", vals)
-        resource_instance = super().create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        _logger.debug("Test kafka send:%s", vals_list)
+        resource_instances = super().create(vals_list)
 
-        resource = self.env['rental.resource'].search([('id', '=', resource_instance.resource_id.id)])
-        location = resource.location_id
-        configuration = location.kafka_configuration
+        for resource_instance in resource_instances:
+            resource = self.env['rental.resource'].search([('id', '=', resource_instance.resource_id.id)])
+            location = resource.location_id
+            configuration = location.kafka_configuration
 
-        _logger.debug("Test kafka send: resource %s", resource)
-        _logger.debug("Test kafka send: location %s", location)
-        _logger.debug("Test kafka send: configuration %s", configuration)
+            _logger.debug("Test kafka send: resource %s", resource)
+            _logger.debug("Test kafka send: location %s", location)
+            _logger.debug("Test kafka send: configuration %s", configuration)
 
-        producer = InstanceMessageProducer(configuration, resource_instance, location, resource)
-        producer.sendToKafka()
-        return resource_instance
+            producer = InstanceMessageProducer(configuration, resource_instance, location, resource)
+            producer.sendToKafka()
+        return resource_instances
