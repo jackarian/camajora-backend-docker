@@ -3,7 +3,6 @@
 
 import pytz
 
-from odoo import fields
 from odoo.addons.component.core import Component
 from odoo.exceptions import MissingError
 
@@ -24,17 +23,20 @@ class UnlockService(Component):
 
     def search(self, itemid, key=None):
         """
-        Get the booking slot for a token in the format of the SSC server
-        (GET ?key=&itemid=<token>): a single slot, with local Europe/Rome dates
+        Get all the booking slots for a token in the format of the SSC server
+        (GET ?key=&itemid=<token>), with local Europe/Rome dates: the SSC picks
+        the slot that is valid when the QR code is scanned
         """
-        slots = self._get_slots(itemid)
-        slot = slots.filtered(lambda s: s.dt_end >= fields.Datetime.now())[:1] or slots[:1]
-        data = self._serialize(slot)
-        for name in ('dt_start', 'dt_end'):
-            data[name] = pytz.utc.localize(data[name]).astimezone(SSC_TIMEZONE).strftime('%Y-%m-%dT%H:%M:%S')
+        slots = self._get_slots(itemid).sorted('dt_start')
+        results = []
+        for slot in slots:
+            data = self._serialize(slot)
+            for name in ('dt_start', 'dt_end'):
+                data[name] = pytz.utc.localize(data[name]).astimezone(SSC_TIMEZONE).strftime('%Y-%m-%dT%H:%M:%S')
+            results.append(data)
         return {
-            'count': len(slots),
-            'results': data,
+            'count': len(results),
+            'results': results,
         }
 
     # PRIVATE METHODS
@@ -84,15 +86,18 @@ class UnlockService(Component):
         return {
             'count': {'type': 'integer', 'required': True},
             'results': {
-                'type': 'dict',
+                'type': 'list',
                 'required': True,
                 'schema': {
-                    'dt_start': {'type': 'string', 'required': True},
-                    'dt_end': {'type': 'string', 'required': True},
-                    'resource_sku': {'type': 'string', 'required': True},
-                    'user_id': {'type': 'integer', 'required': True},
-                    'email': {'type': 'string', 'required': True},
-                    'location_id': {'type': 'integer', 'required': True},
+                    'type': 'dict',
+                    'schema': {
+                        'dt_start': {'type': 'string', 'required': True},
+                        'dt_end': {'type': 'string', 'required': True},
+                        'resource_sku': {'type': 'string', 'required': True},
+                        'user_id': {'type': 'integer', 'required': True},
+                        'email': {'type': 'string', 'required': True},
+                        'location_id': {'type': 'integer', 'required': True},
+                    }
                 },
             },
         }
