@@ -1,8 +1,9 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_resource_image_edit,resource_image edit,model_resource_image_relation,storage_image.group_image_manager,1,1,1,1
+access_resource_image_edit,resource_image edit,model_resource_image_relation,fs_base_multi_image.group_image_manager,1,1,1,1
+access_resource_image_edit_rental_manager,resource_image edit rental manager,model_resource_image_relation,rental.group_rental_manager,1,1,1,1
 access_resource_image_read,resource_image read,model_resource_image_relation,base.group_user,1,0,0,0
 access_resource_image_read_customer,resource_image read customer,model_resource_image_relation,rental.group_rental_customer,1,0,0,0
-access_storage_image_read_customer,storage_image read customer,model_storage_image,rental.group_rental_customer,1,0,0,0
+access_fs_image_read_customer,fs_image read customer,fs_base_multi_image.model_fs_image,rental.group_rental_customer,1,0,0,0
 access_image_tag_edit,image_tag edit,model_image_tag,base.group_erp_manager,1,1,1,1
 access_image_tag_read,image_tag read,model_image_tag,base.group_user,1,0,0,0
 access_image_tag_read_customer,image_tag read customer,model_image_tag,rental.group_rental_customer,1,0,0,0

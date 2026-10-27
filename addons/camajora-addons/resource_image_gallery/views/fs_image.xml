@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <record id="fs_image_view_form" model="ir.ui.view">
+    <field name="model">fs.image</field>
+    <field name="inherit_id" ref="fs_base_multi_image.fs_image_form_view" />
+    <field name="arch" type="xml">
+      <xpath expr="//sheet" position="inside">
+        <notebook>
+          <page name="resources" string="Resources">
+            <field name="resource_relation_ids">
+              <tree>
+                <field name="resource_id" />
+                <field name="tag_id" />
+              </tree>
+            </field>
+          </page>
+        </notebook>
+      </xpath>
+    </field>
+  </record>
+</odoo>

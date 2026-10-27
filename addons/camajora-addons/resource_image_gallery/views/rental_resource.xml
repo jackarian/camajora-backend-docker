@@ -1,20 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-
   <record id="rental_resource_form_view" model="ir.ui.view">
     <field name="model">rental.resource</field>
     <field name="inherit_id" ref="rental.rental_resource_form_view" />
     <field name="arch" type="xml">
-      <field name="image" position="replace">
-        <field name="image" invisible="True" />
-        <field name="image_medium_url" widget="image_url" class="oe_avatar" />
-      </field>
-      <xpath expr="//page[@name='instances']" position="after">
+      <xpath expr="//page[@name='description']" position="after">
         <page name="gallery" string="Gallery">
-          <field name="image_ids" mode="kanban" widget="image_handle" />
+          <field name="image_ids" mode="kanban" context="{'active_model': 'rental.resource'}" />
         </page>
       </xpath>
     </field>
   </record>
-
 </odoo>

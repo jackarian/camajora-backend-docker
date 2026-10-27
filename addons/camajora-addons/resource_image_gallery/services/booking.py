@@ -11,7 +11,8 @@ class BookingService(Component):
     def _serialize_one_slot(self, line):
         serialized = super()._serialize_one_slot(line)
 
-        if line.resource_instance_id.resource_id.image_ids:
-            serialized['image'] = line.resource_instance_id.resource_id.image_ids[0].image_id.file_id.url
+        gallery = line.resource_instance_id.resource_id._get_gallery_urls()
+        if gallery:
+            serialized['image'] = gallery[0]
 
         return serialized

@@ -9,23 +9,7 @@ class BookingSlotsService(Component):
 
     def _serialize(self, record):
         serialized = super()._serialize(record)
-        _logger.info('~~~~~~~~~~~')
-        _logger.info('~~~~~~~~~~~')
-        _logger.info('~~~~~~~~~~~')
-        _logger.info('~~~~~~~~~~~')
-        _logger.info('~~~~~~~~~~~')
-
-        if record.resource_instance_id.resource_id.image_ids:
-            serialized['image'] = record.resource_instance_id.resource_id.image_ids[0].image_id.file_id.url
-
-        _logger.info(record)
-        _logger.info(record.resource_instance_id)
-        _logger.info(record.resource_instance_id.resource_id)
-        _logger.info(record.resource_instance_id.resource_id.image_ids)
-        _logger.info(serialized['image'])
-        _logger.info('~~~~~~~~~~~')
-        _logger.info('~~~~~~~~~~~')
-        _logger.info('~~~~~~~~~~~')
-        _logger.info('~~~~~~~~~~~')
-        _logger.info('~~~~~~~~~~~')
+        gallery = record.resource_instance_id.resource_id._get_gallery_urls()
+        if gallery:
+            serialized['image'] = gallery[0]
         return serialized

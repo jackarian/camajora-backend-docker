@@ -17,3 +17,6 @@ kafka-python
 # lxml 5.x moved html cleaning to lxml_html_clean
 lxml<6
 lxml_html_clean
+# OCA storage (resource_image_gallery: fs_base_multi_image)
+fsspec>=2025.3.0
+python-slugify

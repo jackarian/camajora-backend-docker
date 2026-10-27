@@ -13,10 +13,11 @@ class ResourceService(Component):
     def _serialize(self, resource_id):
         serialized = super()._serialize(resource_id)
 
-        if resource_id.image_ids:
-            serialized['image'] = resource_id.image_ids[0].image_id.file_id.url
+        gallery = resource_id._get_gallery_urls()
+        if gallery:
+            serialized['image'] = gallery[0]
 
-        serialized['image_gallery'] = [i.image_id.file_id.url for i in resource_id.image_ids]
+        serialized['image_gallery'] = gallery
 
         return serialized
 

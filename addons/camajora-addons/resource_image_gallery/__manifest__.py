@@ -9,13 +9,13 @@
     'license': 'AGPL-3',
     'author': 'Metadonors srl',
     'website': 'https://www.metadonors.it',
-    "depends": ["storage_image", "rental"],
+    "depends": ["fs_base_multi_image", "rental_api"],
     "data": [
         "security/ir.model.access.csv",
         "views/resource_image_relation.xml",
         "views/rental_resource.xml",
         "views/image_tag.xml",
-        "views/storage_image.xml",
+        "views/fs_image.xml",
     ],
     "assets": {},
 }
