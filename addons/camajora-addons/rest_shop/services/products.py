@@ -45,11 +45,11 @@ class JobOffersProductsService(Component):
         data = {}
         data['id'] = variant.id
         name = ""
-        for attribute_id in variant.attribute_value_ids:
+        for attribute_id in variant.product_template_attribute_value_ids:
             name += "%s" % (attribute_id.name)
         data['name'] = name
         data['code'] = variant.default_code
-        data['price'] = pricelist.get_product_price(variant, 1, self.env.user.partner_id.id)
+        data['price'] = self._get_price(pricelist, variant)
         data['image'] = "%s/website/image/product.product/%s/image/500x0" % (base_url, variant.id)
         data['image_small'] = "%s/website/image/product.product/%s/image/200x0" % (base_url, variant.id)
         data['is_available'] = self._variant_is_available(variant)
@@ -67,10 +67,9 @@ class JobOffersProductsService(Component):
         data['image'] = "%s/website/image/product.template/%s/image" % (base_url, record.id)
         data['image_small'] = "%s/website/image/product.template/%s/image/200x200" % (base_url, record.id)
 
-        pricelist_id = self.env['product.pricelist'].sudo()._get_partner_pricelist(self.env.user.partner_id.id)
-        pricelist = self.env['product.pricelist'].sudo().browse(pricelist_id)
+        pricelist = self.env.user.partner_id.sudo().property_product_pricelist
 
-        data['price'] = pricelist.get_product_price(record, 1, self.env.user.partner_id.id)
+        data['price'] = self._get_price(pricelist, record)
 
         data['credits'] = record.credits_value
 
@@ -92,6 +91,11 @@ class JobOffersProductsService(Component):
         return data
 
     # PRIVATE METHODS
+
+    def _get_price(self, pricelist, product):
+        if not pricelist:
+            return product.list_price
+        return pricelist._get_product_price(product, 1.0)
 
     def _retrieve_products(self, **params):
         domain = []

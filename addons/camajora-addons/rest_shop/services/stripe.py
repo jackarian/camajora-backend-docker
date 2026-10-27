@@ -1,7 +1,7 @@
 import logging
 import stripe
 
-from odoo import _
+from odoo import Command, _
 from odoo.addons.payment import utils as payment_utils
 from odoo.addons.component.core import Component
 from odoo.exceptions import UserError
@@ -40,8 +40,6 @@ class PaymentService(Component):
         }
 
     def initialize(self, **params):
-        _logger.error("SK %s" % self.stripe_backend.stripe_secret_key)
-        _logger.error("PK %s" % self.stripe_backend.stripe_publishable_key)
         stripe.api_key = self.stripe_backend.stripe_secret_key
 
         domain = [
@@ -56,42 +54,37 @@ class PaymentService(Component):
 
         try:
             vals = {
-                # "amount": order_id.amount_total,
-                # "currency_id": order_id.currency_id.id,
-                # "partner_id": order_id.partner_id.id,
+                "amount": order_id.amount_total,
+                "currency_id": order_id.currency_id.id,
+                "partner_id": order_id.partner_id.id,
                 "provider_id": self.stripe_backend.id,
-                # "sale_order_id": order_id.id,
+                "payment_method_id": self._get_stripe_payment_method().id,
+                "operation": "online_direct",
+                "sale_order_ids": [Command.set(order_id.ids)],
                 "reference":  "%s-%s" % (order_id.name, self.env["ir.sequence"].sudo().next_by_code("stripe.transaction.reference"))
             }
 
-            # transaction = self.env['payment.transaction'].sudo().create(vals)
-            transaction = order_id.sudo()._create_payment_transaction(vals)
+            transaction = self.env['payment.transaction'].sudo().create(vals)
             intent = self._prepare_stripe_intent(order_id, transaction)
             transaction.write({
                 'provider_reference': intent.id,
             })
-            return intent
+            return {"client_secret": intent.client_secret}
         except Exception as e:
             raise UserError(str(e))
 
     def confirm(self, **params):
         transaction = self._get_stripe_transaction_from_intent(params['intent_id'])
         intent = self._confirm_stripe_intent(transaction, params['intent_id'])
-        _logger.error("CONFIRM TRANSACTION")
-        _logger.error(intent.__dict__)
+        _logger.info("Stripe intent %s status %s", intent.id, intent.status)
 
         if intent.status == "succeeded":
-            _logger.error("SUCCESS")
-            transaction.sudo().write({
-                'state': 'done',
-                'provider_reference': params['intent_id'],
-            })
-            _logger.error("GENERATE, PAY AND SEND INVOICE")
-            _logger.error("SENDING INVOICE")
-            transaction.sudo()._reconcile_after_transaction_done()
+            if transaction.state != 'done':
+                transaction.sudo()._set_done()
+                transaction.sudo()._finalize_post_processing()
         else:
             transaction.sudo().write({
-                'state': STRIPE_TRANSACTION_STATUSES[intent.status]
+                'state': STRIPE_TRANSACTION_STATUSES.get(intent.status, 'pending')
             })
 
         return self._generate_stripe_response(intent, **params)
@@ -102,6 +95,14 @@ class PaymentService(Component):
 
     def _get_stripe_private_key(self, transaction):
         return self.stripe_backend.stripe_secret_key
+
+    def _get_stripe_payment_method(self):
+        method = self.stripe_backend.with_context(active_test=False).payment_method_ids.filtered(
+            lambda m: m.code == 'card'
+        )[:1]
+        if not method:
+            raise UserError(_("No card payment method configured for Stripe"))
+        return method
 
     def _get_or_create_stripe_customer(self, order_id):
         stripe_customer = None
@@ -139,7 +140,7 @@ class PaymentService(Component):
         :param intent: string
         :return: payment.transaction
         """
-        transaction = self.env["payment.transaction"].search(
+        transaction = self.env["payment.transaction"].sudo().search(
             [
                 ("provider_reference", "=", intent_id),
                 ("provider_id.code", "=", "stripe"),

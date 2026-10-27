@@ -10,8 +10,8 @@ log = logging.getLogger(__name__)
 class PaymentTransaction(models.Model):
     _inherit = 'payment.transaction'
 
-    def _reconcile_after_transaction_done(self):
-        res = super()._reconcile_after_transaction_done()
+    def _reconcile_after_done(self):
+        res = super()._reconcile_after_done()
         for trans in self.filtered(lambda t: t.sale_order_ids):
             for sale_order_id in trans.sale_order_ids:
                 self._generate_credit_order(sale_order_id)

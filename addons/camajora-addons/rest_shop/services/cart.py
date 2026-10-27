@@ -66,7 +66,7 @@ class CartService(Component):
             "id": line.id,
             "product": line.sudo().name,
             "image": "%s/website/image/product.product/%s/image/200x0" % (base_url, line.sudo().product_id.id),
-            "variant": ",".join([a.name for a in line.sudo().product_id.attribute_value_ids]),
+            "variant": ",".join([a.name for a in line.sudo().product_id.product_template_attribute_value_ids]),
             "amount": {
                 "price": line.price_unit,
                 "untaxed": line.price_subtotal,
@@ -159,7 +159,7 @@ class CartService(Component):
         :return: sale.order recordset (cart)
         """
 
-        query = "SELECT 1 FROM sale_order WHERE state = 'draft' or state = 'review' and typology = 'cart' and partner_id = %s FOR UPDATE"
+        query = "SELECT 1 FROM sale_order WHERE state IN ('draft', 'review') AND typology = 'cart' AND partner_id = %s FOR UPDATE"
         self.env.cr.execute(query, [self.env.user.partner_id.id])
         cart = self.env["sale.order"].sudo().search([
             ('state', 'in', ['draft', 'review']),
@@ -184,10 +184,8 @@ class CartService(Component):
             "partner_id": partner.id,
             "partner_shipping_id": partner.id,
             "partner_invoice_id": partner.id,
+            "user_id": False,
         }
-        vals.update(self.env["sale.order"].sudo().play_onchanges(vals, vals.keys()))
-
-        vals['user_id'] = False
 
         return vals
 
@@ -214,23 +212,8 @@ class CartService(Component):
             qty = existing_item.product_uom_qty + params["item_qty"]
             self._upgrade_cart_item_quantity(cart, existing_item, qty)
         else:
-            with self.env.norecompute():
-                vals = self._prepare_cart_item(params, cart)
-                # the next statement is done with suspending the security for
-                #  performance reasons. It is safe only if both 3 following
-                # fields are filled on the sale order:
-                # - company_id
-                # - fiscal_position_id
-                # - pricelist_id
-                new_values = (
-                    self.env["sale.order.line"]
-                    .sudo()
-                    # .suspend_security()
-                    .play_onchanges(vals, vals.keys())
-                )
-                vals.update(new_values)
-                self.env["sale.order.line"].sudo().create(vals)
-            cart.recompute()
+            vals = self._prepare_cart_item(params, cart)
+            self.env["sale.order.line"].sudo().create(vals)
 
     def _get_cart_item(self, cart, params, raise_if_not_found=True):
         # We search the line based on the item id and the cart id
@@ -275,15 +258,7 @@ class CartService(Component):
         raise NotFound("No cart item found with id %s" % params["item_id"])
 
     def _upgrade_cart_item_quantity(self, cart, item, product_qty):
-        with self.env.norecompute():
-            vals = {"product_uom_qty": product_qty}
-            new_values = item.sudo().play_onchanges(vals, vals.keys())
-            # clear cache after play onchange
-            real_line_ids = [line.id for line in cart.sudo().order_line if line.id]
-            cart._cache["order_line"] = tuple(real_line_ids)
-            vals.update(new_values)
-            item.sudo().write(vals)
-        cart.recompute()
+        item.sudo().write({"product_uom_qty": product_qty})
 
     def _clear_cart(self, cart):
         """
