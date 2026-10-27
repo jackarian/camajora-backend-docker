@@ -115,9 +115,9 @@ class LocationService(Component):
             "long": {'type': 'float', 'required': True, 'empty': False},
             "hotspot_name": {'type': 'string', 'required': True, 'empty': False},
             "scc_address": {'type': 'string', 'required': True, 'empty': False},
-            "contact_email_ref": {'type': 'string', 'required': True, 'empty': False},
-            "contact_mobile_ref": {'type': 'string', 'required': True, 'empty': False},
-            "contact_name_ref": {'type': 'string', 'required': True, 'empty': False},
+            "contact_email_ref": {'type': 'string', 'required': False, 'empty': True, 'nullable': True},
+            "contact_mobile_ref": {'type': 'string', 'required': False, 'empty': True, 'nullable': True},
+            "contact_name_ref": {'type': 'string', 'required': False, 'empty': True, 'nullable': True},
             "endpoint_opener": {'type': 'string', 'required': True, 'empty': False},
             "resources": {
                 'type': 'list',
