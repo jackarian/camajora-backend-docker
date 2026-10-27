@@ -1,56 +1,19 @@
+# odoo/scripts/generate_odoo_conf.py
 click
-setuptools
 jinja2
 pyyaml
+# development: auto-reload with --dev, odoo shell
 watchdog
-phonenumbers
 ipython
-OdooRPC
-gevent
-greenlet
-cerberus
-pyquerystring
-parse-accept-language
-num2words
-websocket_client
-cachetools
-validate_email
-codicefiscale
-Unidecode
-fuzzywuzzy
-python-gestpay==0.1.5
-python-Levenshtein==0.12.0
-XlsxWriter==1.2.9
-psycopg2
-#-e git://github.com/OCA/openupgradelib.git#egg=openupgradelib
-markdown
-python-slugify
-marshmallow
-tomd
-html2text
-captain-pycard
-schwifty
-python-mobyt
-mandrill
-tablib[all]
-paramiko
-python-redmine
-cubiscan
-mock
-python-barcode
-python-axepta
-pyxb
-asn1crypto
-requests-futures
-jsondiff
-stripe
-graphql-core
-graphene
-graphql-server-core
-marshmallow-objects
+# OCA modules in external/ (base_rest, component)
 apispec
-fsspec
-python_slugify
+cachetools
+cerberus
+parse-accept-language
+pyquerystring
+# camajora-addons (rest_shop, rental_kafka)
+stripe
 kafka-python
+# lxml 5.x moved html cleaning to lxml_html_clean
 lxml<6
 lxml_html_clean
