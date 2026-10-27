@@ -164,8 +164,10 @@ class BookingService(Component):
         }
 
     def _get(self, create_if_not_found=True):
+        # lock the partner row so concurrent requests don't create two carts: NOWAIT makes
+        # the other requests fail with LockNotAvailable, Odoo retries them in a new transaction
         self.env.cr.execute(
-            'SELECT 1 FROM rental_booking WHERE state = \'draft\' and user_id = %s FOR UPDATE',
+            'SELECT 1 FROM res_partner WHERE id = %s FOR UPDATE NOWAIT',
             [self.env.user.partner_id.id]
         )
 

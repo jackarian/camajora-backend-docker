@@ -14,4 +14,5 @@ class RentalBookingSlot(models.Model):
     @api.depends('credit_cost', 'total_hours')
     def _compute_total(self):
         for record in self:
-            record.credit_total = (record.credit_cost / 3600) * record.total_hours
+            # hourly credit cost, rounded up per slot
+            record.credit_total = -(-record.credit_cost * record.total_hours // 3600)

@@ -159,8 +159,9 @@ class CartService(Component):
         :return: sale.order recordset (cart)
         """
 
-        query = "SELECT 1 FROM sale_order WHERE state IN ('draft', 'review') AND typology = 'cart' AND partner_id = %s FOR UPDATE"
-        self.env.cr.execute(query, [self.env.user.partner_id.id])
+        # lock the partner row so concurrent requests don't create two carts: NOWAIT makes
+        # the other requests fail with LockNotAvailable, Odoo retries them in a new transaction
+        self.env.cr.execute("SELECT 1 FROM res_partner WHERE id = %s FOR UPDATE NOWAIT", [self.env.user.partner_id.id])
         cart = self.env["sale.order"].sudo().search([
             ('state', 'in', ['draft', 'review']),
             ('typology', '=', 'cart'),
