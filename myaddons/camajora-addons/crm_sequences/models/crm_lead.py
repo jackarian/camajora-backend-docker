@@ -12,13 +12,12 @@ class CrmLead(models.Model):
         readonly=True
     )
 
-    @api.depends('name', 'code')
-    def name_get(self):
-        result = []
+    @api.depends('code')
+    def _compute_display_name(self):
+        super()._compute_display_name()
         for record in self:
-            name = u'[{}] {}'.format(record.code, record.name)
-            result.append((record.id, name))
-        return result
+            if record.code:
+                record.display_name = '[{}] {}'.format(record.code, record.display_name)
 
     @api.model_create_multi
     def create(self, vals_list):

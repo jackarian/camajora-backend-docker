@@ -7,15 +7,15 @@
     <record model="ir.ui.view" id="crm_lead_form_view">
         <field name="name">crm.lead.form (in crm_sequences)</field>
         <field name="model">crm.lead</field>
-        <field name="inherit_id" ref="sale_crm.crm_case_form_view_oppor" />
+        <field name="inherit_id" ref="crm.crm_lead_view_form" />
         <field name="arch" type="xml">
-            <field name="name" position="after">
+            <xpath expr="//div[hasclass('oe_title')]/h1" position="after">
                 <div>
                     <small>
                         <field name="code" />
                     </small>
                 </div>
-            </field>
+            </xpath>
         </field>
     </record>
 
@@ -46,7 +46,7 @@
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_case_kanban_view_leads" />
         <field name="arch" type="xml">
-            <xpath expr="//t/div/div[@class='oe_kanban_content flex-grow-1']/div" position="after">
+            <xpath expr="//div[hasclass('oe_kanban_content')]/div[hasclass('oe_kanban_details')]" position="after">
                 <div>
                     <small>
                         <field name="code" />
