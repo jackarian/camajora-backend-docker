@@ -56,7 +56,7 @@ COPY ./odoo/scripts /mnt/utils/scripts
 COPY ./odoo/conf /mnt/utils/scripts/conf
 # COPY ./odoo/wait-for-it.sh /wait-for-it.sh
 
-COPY ./community-addons/ /mnt/bundle-addons/
+COPY ./external/ /mnt/bundle-addons/
 COPY ./addons/ /mnt/bundle-addons/
 
 COPY ./odoo/conf/web/nginx.conf /etc/nginx/nginx.conf
