@@ -5,9 +5,9 @@ from .booking import format_total_hour
 
 
 def _conv_flot_totime(t):
-    hour, minute = divmod(t, 1)
-    minute *= 60
-    return str(int(hour)) + ':' + str(int(minute))
+    # float hours (e.g. 8.5) to "HH:MM" (e.g. "08:30")
+    hour, minute = divmod(round(t * 60), 60)
+    return '%02d:%02d' % (hour, minute)
 
 
 class BookingSlotsService(Component):
