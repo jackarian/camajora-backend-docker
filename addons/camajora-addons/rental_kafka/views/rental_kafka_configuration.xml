@@ -22,7 +22,6 @@
             <field name="topic" />
           </group>
         </sheet>
-        <div class="oe_chatter"></div>
       </form>
     </field>
   </record>
