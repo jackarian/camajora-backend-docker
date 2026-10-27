@@ -18,14 +18,10 @@ class SaleOrder(models.Model):
         [("sale", "Sale"), ("cart", "Cart")],
         default="sale"
     )
-    state = fields.Selection([
-        ('draft', 'Quotation'),
-        ('review', _('Review')),
-        ('sent', 'Quotation Sent'),
-        ('sale', 'Sales Order'),
-        ('done', 'Locked'),
-        ('cancel', 'Cancelled'),
-    ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', default='draft')
+    state = fields.Selection(
+        selection_add=[('review', 'Review'), ('sent',)],
+        ondelete={'review': 'set default'},
+    )
 
     @api.multi
     def action_confirm_cart(self):

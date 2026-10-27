@@ -15,7 +15,6 @@
                         <field name="token" />
                     </group>
                 </sheet>
-                <div class="oe_chatter"></div>
             </form>
         </field>
     </record>

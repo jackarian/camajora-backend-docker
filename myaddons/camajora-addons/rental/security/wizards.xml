@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record model="ir.model.access" id="rental_resource_instance_wizard_access_owner">
+    <field name="name">rental.resource.instance.wizard.owner</field>
+    <field name="model_id" ref="model_rental_resource_instance_wizard" />
+    <field name="group_id" ref="rental.group_rental_owner" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="1" />
+    <field name="perm_write" eval="1" />
+    <field name="perm_unlink" eval="1" />
+  </record>
+
+  <record model="ir.model.access" id="my_wizard_access_owner">
+    <field name="name">my.wizard.owner</field>
+    <field name="model_id" ref="model_my_wizard" />
+    <field name="group_id" ref="rental.group_rental_owner" />
+    <field name="perm_read" eval="1" />
+    <field name="perm_create" eval="1" />
+    <field name="perm_write" eval="1" />
+    <field name="perm_unlink" eval="1" />
+  </record>
+
+</odoo>

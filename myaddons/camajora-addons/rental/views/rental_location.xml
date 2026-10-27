@@ -35,7 +35,7 @@
               <group>
                 <field name="contact_email_ref"/>
                 <field name="contact_mobile_ref"/>
-                <field name="contact_name_ref"/>
+                <field name="contact_name_ref" string="Name"/>
               </group>
             </page>
             <page string="Network Service Access Info">
@@ -47,21 +47,20 @@
             </page>
             <page string="API Door Opening Config">
               <group>
-                <field name="scc_endpoint_open_door"/>
-                <field name="scc_endpoint_open_door_protocol"/>
-                <field name="scc_endpoint_open_door_port"/>
+                <field name="scc_endpoint_open_door" string="API"/>
+                <field name="scc_endpoint_open_door_protocol" string="Protocol"/>
+                <field name="scc_endpoint_open_door_port" string="Port"/>
               </group>
             </page>
             <page string="API Resource Activation Config">
               <group>
-                <field name="scc_endpoint_resource_activation"/>
-                <field name="scc_endpoint_resource_activation_protocol"/>
-                <field name="scc_endpoint_resource_activation_port"/>
+                <field name="scc_endpoint_resource_activation" string="API"/>
+                <field name="scc_endpoint_resource_activation_protocol" string="Protocol"/>
+                <field name="scc_endpoint_resource_activation_port" string="Port"/>
               </group>
             </page>
           </notebook>
         </sheet>
-        <div class="oe_chatter"></div>
       </form>
     </field>
   </record>

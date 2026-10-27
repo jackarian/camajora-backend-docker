@@ -26,6 +26,7 @@
         'security/rental_resource_size.xml',
         'security/rental_resource_type.xml',
         'security/res_partner.xml',
+        'security/wizards.xml',
         'wizards/generate_instances_wizard.xml',
         'views/rental_availability.xml',
         'views/rental_duration.xml',

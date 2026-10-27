@@ -55,7 +55,8 @@ class AuthApiToken(models.Model):
     def _generate_token(self):
         return hexlify(os.urandom(TOKEN_LENGHT))
 
-    @api.model
-    def create(self, vals):
-        vals['token'] = self._generate_token()
-        return super().create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            vals['token'] = self._generate_token()
+        return super().create(vals_list)

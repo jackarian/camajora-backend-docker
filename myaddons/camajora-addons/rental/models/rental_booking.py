@@ -38,15 +38,16 @@ class RentalBooking(models.Model):
     token = fields.Char(string=_('Secret Token'), readonly=True)
     qr_code = fields.Binary(string=_('QR Code'), readonly=True)
 
-    @api.model
-    def create(self, vals):
-        vals['name'] = self.env['ir.sequence'].next_by_code('rental.booking.sku')
-        vals['token'] = self._generate_token()
-        vals['qr_code'] = self._generate_qr_code(vals['token'])
-        return super().create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            vals['name'] = self.env['ir.sequence'].next_by_code('rental.booking.sku')
+            vals['token'] = self._generate_token()
+            vals['qr_code'] = self._generate_qr_code(vals['token'])
+        return super().create(vals_list)
 
     @api.model
-    def search(self, args, offset=0, limit=None, order=None, count=False):
+    def search(self, args, offset=0, limit=None, order=None):
 
         backend = self.env.context.get('backend')
 
@@ -57,7 +58,7 @@ class RentalBooking(models.Model):
                 args = [] if args is None else args.copy()
                 args.append(('slot_ids.location_id.partner_id', '=', current_owner.id))
 
-        return super(RentalBooking, self).search(args, offset, limit, order, count)
+        return super(RentalBooking, self).search(args, offset, limit, order)
 
     def _compute_slot_count(self):
         for record in self:

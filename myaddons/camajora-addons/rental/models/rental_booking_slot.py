@@ -34,13 +34,7 @@ class RentalBookingSlot(models.Model):
                                string=_('Owner'))
     duration_id = fields.Many2one('rental.duration', string=_('Duration'), required=True)
     state = fields.Selection(related="booking_id.state", string="State")
-    duration = fields.Selection([
-        ('hourly', _('Hourly')),
-        ('half_daily', _('Half daily')),
-        ('daily', _('Daily')),
-        ('weekly', _('Weekly')),
-        ('monthly', _('Monthly')),
-    ], related='duration_id.type', string=_('Duration Type'))
+    duration = fields.Selection(related='duration_id.type', string=_('Duration Type'))
 
     start_date = fields.Date(string=_('Start Date'), required=True)
     end_date = fields.Date(string=_('End Date'), required=False)
@@ -56,12 +50,12 @@ class RentalBookingSlot(models.Model):
     total_hours = fields.Integer(string=_('Total Hours'), readonly=True, compute='_compute_range', store=True)
     dt_start = fields.Datetime(string=_('Booking From'), readonly=True, compute='_compute_range', store=True)
     dt_end = fields.Datetime(string=_('Booking To'), readonly=True, compute='_compute_range', store=True)
-    formatted_total_hours = fields.Char(string=_('Total Hours Formatted'), readonly=True, compute='_compute_range',
-                                        store=False)
+    formatted_total_hours = fields.Char(string=_('Total Hours Formatted'), readonly=True,
+                                        compute='_compute_formatted_total_hours', store=False)
     unlock_link = fields.Char(string=_('Unlock Link'), readonly=True, compute='_compute_unlock_link')
 
     @api.model
-    def search(self, args, offset=0, limit=None, order=None, count=False):
+    def search(self, args, offset=0, limit=None, order=None):
         backend = self.env.context.get('backend')
 
         if backend is not None:
@@ -74,7 +68,7 @@ class RentalBookingSlot(models.Model):
                 else:
                     args.append(('owner_id', '=', current_owner.id))
 
-        return super(RentalBookingSlot, self).search(args, offset, limit, order, count)
+        return super(RentalBookingSlot, self).search(args, offset, limit, order)
 
     @api.depends(
         'duration',
@@ -99,6 +93,10 @@ class RentalBookingSlot(models.Model):
             record.total_hours = slot_range['total_hours']
             record.dt_start = slot_range['dt_start']
             record.dt_end = slot_range['dt_end']
+
+    @api.depends('total_hours')
+    def _compute_formatted_total_hours(self):
+        for record in self:
             record.formatted_total_hours = format_total_hour(record.total_hours)
 
     @api.constrains('resource_instance_id', 'dt_start', 'dt_end')
@@ -126,7 +124,7 @@ class RentalBookingSlot(models.Model):
                                             record.dt_start, record.dt_end))
 
             reservetion_found = self.env.cr.fetchone()[0]
-            _logger.debug(self, 'Reservation found: %s', reservetion_found)
+            _logger.debug('Reservation found: %s', reservetion_found)
 
             if reservetion_found > 0:
                 raise ValidationError(_('You can not have an overlap between two booking slots of the same resource.\n'
@@ -143,16 +141,16 @@ class RentalBookingSlot(models.Model):
                 record.resource_instance_id.code,
             )
 
-    @api.model
-    def create(self, vals):
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if str(vals.get('end_date')) == 'False':
+                vals['end_date'] = vals.get('start_date')
 
-        if str(vals.get('end_date')) == 'False':
-            vals['end_date'] = vals.get('start_date')
-
-        record = super().create(vals)
-        if record.start_date < fields.Date.today():
+        records = super().create(vals_list)
+        if any(record.start_date < fields.Date.today() for record in records):
             raise ValidationError(_('The starting date must not be in the past.'))
-        return record
+        return records
 
 
 # ------------
