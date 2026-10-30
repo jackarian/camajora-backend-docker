@@ -1,0 +1,47 @@
+# Ambiente di test di Padova su iot-casa.back-iot.it: Odoo per padova-stage-backend.back-iot.it.
+# Apache del server fa da proxy HTTPS (apache/padova-stage.conf) e serve mude-app come file statici.
+# Le password stanno in .env accanto a questo file (modello in env.example), mai nel repo.
+name: camajora-stage
+
+volumes:
+  pgdata:
+  odoo_data:
+
+services:
+  postgres:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=${ODOO_DB_PASSWORD}
+      - POSTGRES_DB=postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  odoo:
+    # copiata sul server con docker save | docker load, non pubblicata su Docker Hub
+    image: mudesrl/service.back-iot:${ODOO_IMAGE_TAG}
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      - ODOO_DB_HOST=postgres
+      - ODOO_DB_PORT=5432
+      - ODOO_DB_USER=odoo
+      - ODOO_DB_PASSWORD=${ODOO_DB_PASSWORD}
+      - ODOO_DB_NAME=odoo_camajora
+      - ODOO_DBFILTER=^odoo_camajora$
+      - ODOO_ADMIN_PASSWD=${ODOO_ADMIN_PASSWD}
+      - ODOO_LIST_DB=False
+      - ODOO_PROXY_MODE=True
+      - ODOO_DEBUG_MODE=False
+      - ODOO_WORKERS=2
+      - ODOO_QUEUE_JOB_CHANNELS=root:2
+      - ODOO_LIMIT_TIME_CPU=600
+      - ODOO_LIMIT_TIME_REAL=1200
+    ports:
+      # solo locale: da fuori si passa da Apache
+      - "127.0.0.1:8069:80"
+    volumes:
+      - odoo_data:/var/lib/odoo
+    command: run -d odoo_camajora --db-filter ^odoo_camajora$
